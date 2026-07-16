@@ -3,9 +3,16 @@
 #include <cmath>
 
 #include "rclcpp/rclcpp.hpp"
+// Cmd_Vel msg
 #include "geometry_msgs/msg/twist.hpp"
+// Odometry
+#include "nav_msgs/msg/odometry.hpp"
+// Quaternion
+#include "tf2/LinearMath/Quaternion.hpp"
+#include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
 
 using Twist = geometry_msgs::msg::Twist;
+using Odometry = nav_msgs::msg::Odometry;
 using namespace std::chrono_literals;
 
 class VirtualDiffDriveNode : public rclcpp::Node
@@ -26,6 +33,11 @@ public:
             {
                 this->cmd_vel_callback(msg);
             }
+        );
+
+        odom_publisher_ = this->create_publisher<Odometry>(
+            "odom",
+            10
         );
 
         timer_ = this->create_wall_timer(
@@ -55,15 +67,8 @@ private:
         );
     }
 
-    void timer_callback()
+    void update_pose(const double dt)
     {
-        // The timer callback period reads and uses the stored velocity.
-        
-        // calculate dt  (real dt)
-        const rclcpp::Time current_time = this->now();
-        const double dt = (current_time - last_update_time_).seconds();
-        last_update_time_ = current_time;
-
         // calculate odom
         x_ += linear_velocity_ * std::cos(yaw_) * dt;
         y_ += linear_velocity_ * std::sin(yaw_) * dt;
@@ -72,14 +77,55 @@ private:
         // timer_callback period
         RCLCPP_INFO(
             this->get_logger(),
-            "Current velocity: linear.x = %.3f m/s, angular.z = %.3f rad/s"
-            "Pose: x = %.3f, y = %.3f, yaw = %.3f rad"
+            "Current velocity: linear.x = %.3f m/s, angular.z = %.3f rad/s |"
+            "Pose: x = %.3f, y = %.3f, yaw = %.3f rad |"
             "timer_callback_period: %.3fs",
             linear_velocity_,
             angular_velocity_,
             x_, y_, yaw_,
             dt
         );
+    }
+
+    void publish_odom(const rclcpp::Time & stamp)
+    {
+        Odometry odom_msg;
+
+        odom_msg.header.stamp = stamp;
+        odom_msg.header.frame_id = "odom";
+        odom_msg.child_frame_id = "base_link";
+
+        odom_msg.pose.pose.position.x = x_;
+        odom_msg.pose.pose.position.y = y_;
+        odom_msg.pose.pose.position.z = 0.0;
+
+        tf2::Quaternion quaternion;
+        quaternion.setRPY(
+            0.0,    // roll
+            0.0,    // pitch
+            yaw_    // yaw
+        );
+
+        odom_msg.pose.pose.orientation = tf2::toMsg(quaternion);
+
+        odom_msg.twist.twist.linear.x = linear_velocity_;
+        odom_msg.twist.twist.angular.z = angular_velocity_;
+
+        odom_publisher_->publish(odom_msg);
+
+    }
+
+    void timer_callback()
+    {
+        // The timer callback period reads and uses the stored velocity.
+
+        // calculate dt  (real dt)
+        const rclcpp::Time current_time = this->now();
+        const double dt = (current_time - last_update_time_).seconds();
+        last_update_time_ = current_time;
+
+        update_pose(dt);
+        publish_odom(current_time);
     }
 
     rclcpp::Subscription<Twist>::SharedPtr subscription_;
@@ -89,6 +135,8 @@ private:
     double x_, y_, yaw_;
     std::chrono::milliseconds timer_run_period_;
     rclcpp::Time last_update_time_;
+
+    rclcpp::Publisher<Odometry>::SharedPtr odom_publisher_;
 };
 
 int main(int argc, char * argv[])

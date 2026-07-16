@@ -9,9 +9,18 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(nav_msgs)
+find_package(tf2)
+find_package(tf2_geometry_msgs)
 
 add_executable(virtual_diff_drive_node src/virtual_diff_drive_node.cpp)
-ament_target_dependencies(virtual_diff_drive_node rclcpp geometry_msgs)
+ament_target_dependencies(virtual_diff_drive_node 
+  rclcpp 
+  geometry_msgs 
+  nav_msgs
+  tf2
+  tf2_geometry_msgs
+)
 
 install(
   TARGETS
