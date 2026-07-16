@@ -12,6 +12,7 @@ find_package(geometry_msgs REQUIRED)
 find_package(nav_msgs)
 find_package(tf2)
 find_package(tf2_geometry_msgs)
+find_package(tf2_ros)
 
 add_executable(virtual_diff_drive_node src/virtual_diff_drive_node.cpp)
 ament_target_dependencies(virtual_diff_drive_node 
@@ -20,6 +21,7 @@ ament_target_dependencies(virtual_diff_drive_node
   nav_msgs
   tf2
   tf2_geometry_msgs
+  tf2_ros
 )
 
 install(

@@ -10,6 +10,9 @@
 // Quaternion
 #include "tf2/LinearMath/Quaternion.hpp"
 #include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
+// Dynamic boradcaster
+#include "geometry_msgs/msg/transform_stamped.hpp"
+#include "tf2_ros/transform_broadcaster.hpp"
 
 using Twist = geometry_msgs::msg::Twist;
 using Odometry = nav_msgs::msg::Odometry;
@@ -39,6 +42,8 @@ public:
             "odom",
             10
         );
+
+        tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 
         timer_ = this->create_wall_timer(
             timer_run_period_,
@@ -115,6 +120,29 @@ private:
 
     }
 
+    void broadcast_odom_tf(const rclcpp::Time & stamp)
+    {
+        geometry_msgs::msg::TransformStamped transform;
+
+        transform.header.stamp = stamp;
+        transform.header.frame_id = "odom";
+        transform.child_frame_id = "base_link";
+
+        transform.transform.translation.x = x_;
+        transform.transform.translation.y = y_;
+        transform.transform.translation.z = 0.0;
+
+        tf2::Quaternion quaternion;
+        quaternion.setRPY(
+            0.0,
+            0.0,
+            yaw_
+        );
+        transform.transform.rotation = tf2::toMsg(quaternion);
+
+        tf_broadcaster_->sendTransform(transform);
+    }
+
     void timer_callback()
     {
         // The timer callback period reads and uses the stored velocity.
@@ -126,6 +154,7 @@ private:
 
         update_pose(dt);
         publish_odom(current_time);
+        broadcast_odom_tf(current_time);
     }
 
     rclcpp::Subscription<Twist>::SharedPtr subscription_;
@@ -137,6 +166,8 @@ private:
     rclcpp::Time last_update_time_;
 
     rclcpp::Publisher<Odometry>::SharedPtr odom_publisher_;
+
+    std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
 };
 
 int main(int argc, char * argv[])
