@@ -26,8 +26,11 @@ public:
       linear_velocity_(0.0), 
       angular_velocity_(0.0),
       x_(0.0), y_(0.0), yaw_(0.0),
-      timer_run_period_(500ms),
-      last_update_time_(this->now())
+      timer_run_period_(50ms),
+      last_update_time_(this->now()),
+      last_cmd_vel_time_(this->now()),
+      cmd_vel_timeout_(0.5),
+      if_cmd_vel_timeout_(false)
     {
         subscription_ = this->create_subscription<Twist>(
             "cmd_vel",
@@ -59,12 +62,36 @@ public:
         );
     }
 private:
+    void check_cmd_vel_timeout(const rclcpp::Time & current_time)
+    {
+        const double elapsed = (current_time - last_cmd_vel_time_).seconds();
+        if (elapsed > cmd_vel_timeout_) 
+        {
+            linear_velocity_ = 0.0;
+            angular_velocity_ = 0.0;
+
+            if (!if_cmd_vel_timeout_)
+            {
+                RCLCPP_WARN(
+                    this->get_logger(),
+                    "Cmd_vel timeout after %.3f seconds, robot stopped.",
+                    cmd_vel_timeout_
+                );
+                if_cmd_vel_timeout_ = true;
+            }
+        }
+
+        
+    }
+
     void cmd_vel_callback(const Twist::SharedPtr msg)
     {
         // The subscription callback only updates the latest velocity command.
         // Other periodic logic is handled in the timer callback
         linear_velocity_ = msg->linear.x;       
         angular_velocity_ = msg->angular.z;
+        last_cmd_vel_time_ = this->now();
+        if_cmd_vel_timeout_ = false;
 
         RCLCPP_INFO(
             this->get_logger(),
@@ -80,8 +107,10 @@ private:
         yaw_ += angular_velocity_ * dt;
 
         // timer_callback period
-        RCLCPP_INFO(
+        RCLCPP_INFO_THROTTLE(
             this->get_logger(),
+            *this->get_clock(),
+            1000,
             "Current velocity: linear.x = %.3f m/s, angular.z = %.3f rad/s |"
             "Pose: x = %.3f, y = %.3f, yaw = %.3f rad |"
             "timer_callback_period: %.3fs",
@@ -152,6 +181,7 @@ private:
         const double dt = (current_time - last_update_time_).seconds();
         last_update_time_ = current_time;
 
+        check_cmd_vel_timeout(current_time);
         update_pose(dt);
         publish_odom(current_time);
         broadcast_odom_tf(current_time);
@@ -168,6 +198,10 @@ private:
     rclcpp::Publisher<Odometry>::SharedPtr odom_publisher_;
 
     std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
+
+    rclcpp::Time last_cmd_vel_time_;
+    double cmd_vel_timeout_;
+    bool if_cmd_vel_timeout_;
 };
 
 int main(int argc, char * argv[])
