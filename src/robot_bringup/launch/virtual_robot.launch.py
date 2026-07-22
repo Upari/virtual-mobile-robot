@@ -5,7 +5,7 @@ from launch.substitutions import Command
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
 
-from ament_index_python import get_package_share_directory
+from ament_index_python.packages import get_package_share_directory
 
 
 def generate_launch_description():
@@ -17,6 +17,12 @@ def generate_launch_description():
         robot_description_share,
         "urdf",
         "robot.urdf.xacro"
+    )
+
+    rviz_config_file = os.path.join(
+        robot_description_share,
+        "rviz",
+        "robot.rviz"
     )
 
     robot_description = ParameterValue(
@@ -58,7 +64,11 @@ def generate_launch_description():
         package="rviz2",
         executable="rviz2",
         name="rviz2",
-        output="screen"
+        output="screen",
+        argument=[
+            "-d",
+            rviz_config_file
+        ]
     )
     
     return LaunchDescription([
