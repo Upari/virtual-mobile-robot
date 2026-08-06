@@ -18,6 +18,11 @@ def generate_launch_description():
     robot_gazebo_share = get_package_share_directory(
         "robot_gazebo"
     )
+    controller_file = os.path.join(
+        robot_gazebo_share, 
+        "config", 
+        "robot_controllers.yaml"
+    )
     ros_gz_sim_share = get_package_share_directory(
         "ros_gz_sim"
     )
@@ -41,7 +46,10 @@ def generate_launch_description():
     )
 
     robot_description = ParameterValue(
-        Command(["xacro", " ", xacro_file]),
+        Command(["xacro", " ", xacro_file, " ",
+                "controllers_file:=",
+                controller_file
+        ]),
         value_type=str,
     )
 
@@ -84,6 +92,7 @@ def generate_launch_description():
         ],
     )
 
+    # Spawn Robot
     spawn_robot = Node(
         package="ros_gz_sim",
         executable="create",
@@ -110,9 +119,56 @@ def generate_launch_description():
         actions=[spawn_robot],
     )
 
+    # Rviz
+    rviz_node = Node(
+        package="rviz2",
+        executable="rviz2",
+        name="rviz2",
+        output="screen",
+    )
+
+
+    # ros2 controllers
+    spawn_joint_state_broadcaster = Node(
+        package="controller_manager",
+        executable="spawner",
+        name="spawn_joint_state_broadcaster",
+        output="screen",
+        arguments=[
+            "joint_state_broadcaster",
+            "--controller-manager",
+            "/controller_manager"
+        ]
+    )
+
+    spawn_diff_drive_controller = Node(
+        package="controller_manager",
+        executable="spawner",
+        name="spawn_diff_drive_controller",
+        output="screen",
+        arguments=[
+            "diff_drive_controller",
+            "--controller-manager",
+            "/controller_manager",
+            "--controller-ros-args",
+            "--ros-args --remap /diff_drive_controller/cmd_vel:=/cmd_vel"
+        ]
+    )
+
+    delayed_spawn_ros_controllers = TimerAction(
+        period=3.0,
+        actions=[
+            spawn_joint_state_broadcaster,
+            spawn_diff_drive_controller
+            ]
+    )
+
+
     return LaunchDescription([
         gazebo,
         robot_state_publisher,
         bridge,
         delayed_spawn_robot,
+        rviz_node,
+        delayed_spawn_ros_controllers,
     ])

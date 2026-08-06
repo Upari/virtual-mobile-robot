@@ -1,0 +1,49 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 50
+    use_sim_time: true
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+    diff_drive_controller:
+      type: diff_drive_controller/DiffDriveController
+
+diff_drive_controller:
+  ros__parameters:
+
+    # basic setting 
+    left_wheel_names: ["left_wheel_joint"]
+    right_wheel_names: ["right_wheel_joint"]
+    wheel_separation: 0.34
+    wheel_radius: 0.08
+
+    # pub odom and tf
+    position_feedback: true
+    open_loop: false    # true feedback from gazebo or engine
+    
+    odom_frame_id: odom
+    base_frame_id: base_link
+    enable_odom_tf: true
+
+    publish_rate: 50.0
+    cmd_vel_timeout: 0.5
+
+    # Speed limit
+    linear:
+      x:
+        max_velocity: 0.5
+        min_velocity: -0.5
+        max_acceleration: 1.0
+        max_deceleration: -1.0
+        max_jerk: .NAN
+        min_jerk: .NAN
+
+    angular:
+      z:
+        max_velocity: 2.0
+        min_velocity: -2.0
+        max_acceleration: 5.0
+        max_deceleration: -5.0
+        max_jerk: .NAN
+        min_jerk: .NAN
