@@ -400,6 +400,9 @@
 
     <gazebo reference="laser_frame">
         <sensor name="gpu_lidar" type="gpu_lidar">
+            <!-- specified frame name -->
+            <frame_id>laser_frame</frame_id>
+            <gz_frame_id>laser_frame</gz_frame_id>
 
             <!-- Sensor pose relative to laser_frame -->
             <pose>0 0 0 0 0 0</pose>
@@ -414,7 +417,8 @@
             <topic>/scan</topic>
 
             <!-- Show rays in Gazebo GUI -->
-            <visualize>true</visualize>
+            <!-- <visualize>true</visualize> -->
+            
 
             <lidar>
                 <scan>

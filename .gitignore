@@ -1,5 +1,10 @@
+# colcon
 build/
 install/
 log/
 
+# Vs code
 .vscode
+
+# ros bag
+/rosbag2_*/
