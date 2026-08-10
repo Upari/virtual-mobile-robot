@@ -8,3 +8,6 @@ log/
 
 # ros bag
 /rosbag2_*/
+
+# frame tree
+/frames_*
