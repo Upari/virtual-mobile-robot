@@ -301,12 +301,46 @@
         </model>
 
 
-        <!-- A box for lidar testing -->
-        <model name="test_box">
+        <!-- box for lidar testing -->
+        <model name="test_box_1">
             <static>true</static>
 
             <!-- Two metres in front of the robot -->
             <pose>2.0 0.0 0.5 0 0 0</pose>
+
+            <link name="link">
+
+                <collision name="collision">
+                    <geometry>
+                        <box>
+                            <size>0.5 0.5 1.0</size>
+                        </box>
+                    </geometry>
+                </collision>
+
+                <visual name="visual">
+                    <geometry>
+                        <box>
+                            <size>0.5 0.5 1.0</size>
+                        </box>
+                    </geometry>
+
+                    <material>
+                        <ambient>0.8 0.2 0.2 1</ambient>
+                        <diffuse>0.8 0.2 0.2 1</diffuse>
+                    </material>
+                </visual>
+
+            </link>
+        </model>
+
+
+        <!-- box for lidar testing -->
+        <model name="test_box_2">
+            <static>true</static>
+
+            <!-- Four metres in front of the robot -->
+            <pose>4.0 0.0 0.5 0 0 0</pose>
 
             <link name="link">
 
