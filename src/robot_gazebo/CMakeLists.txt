@@ -11,6 +11,19 @@ find_package(ament_cmake REQUIRED)
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 
+find_package(rclcpp REQUIRED)
+find_package(geometry_msgs REQUIRED)
+
+add_executable(cmd_vel_bridge src/cmd_vel_bridge.cpp)
+ament_target_dependencies(cmd_vel_bridge rclcpp geometry_msgs)
+
+install(
+  TARGETS
+    cmd_vel_bridge
+  DESTINATION
+    lib/${PROJECT_NAME}
+)
+
 install(
   DIRECTORY
     launch
