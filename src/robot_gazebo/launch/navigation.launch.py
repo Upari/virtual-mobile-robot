@@ -5,14 +5,6 @@ from launch_ros.actions import Node
 def generate_launch_description():
     params_file = "/home/user/virtual-mobile-robot/src/robot_gazebo/config/nav2_params.yaml"
 
-    # map -> odom
-    static_map_odom = Node(
-        package="tf2_ros",
-        executable="static_transform_publisher",
-        name="static_map_odom",
-        arguments=["0", "0", "0", "0", "0", "0", "map", "odom"],
-    )
-
     # map_server : load map, publish /map
     map_server = Node(
         package="nav2_map_server",
@@ -61,25 +53,22 @@ def generate_launch_description():
         parameters=[params_file],
     )
 
-    # Twist (Nav2)  --> StampedTwist (cmd_vel --> diff_drive_controller)
-    cmd_vel_bridge = Node(
-        package="robot_gazebo",
-        executable="cmd_vel_bridge",
-        name="cmd_vel_bridge",
+    # AMCL
+    amcl = Node(
+        package="nav2_amcl",
+        executable="amcl",
+        name="amcl",
         output="screen",
-        parameters=[
-            {"use_sim_time": True}
-        ],
+        parameters=[params_file],
     )
 
     # RETURN 
     return LaunchDescription([
-        static_map_odom,
         map_server,
         bt_navigator,
         planner_server,
         controller_server,
         behavior_server,
         lifecycle_manager,
-        cmd_vel_bridge,
+        amcl,
     ])
