@@ -15,7 +15,7 @@ install(
   DIRECTORY
     launch
     rviz
-    urdf
+    # urdf
   DESTINATION
     share/${PROJECT_NAME}
 )

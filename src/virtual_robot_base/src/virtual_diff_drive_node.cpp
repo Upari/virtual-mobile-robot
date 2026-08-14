@@ -1,3 +1,10 @@
+/*
+---已弃用, 功能已被 Robot_controller 代替
+但是有学习价值, 可以学习如何控制小车
+virtual_diff_drive_node  驾驶节点
+
+读取 /cmd_vel 上的消息, 同时判断是否超时
+*/
 #include <memory>
 #include <chrono>
 #include <cmath>
@@ -32,6 +39,7 @@ public:
       cmd_vel_timeout_(0.5),
       if_cmd_vel_timeout_(false)
     {
+        // 订阅 /cmd_vel 上的消息, 同时把目标速度值写入私有变量
         subscription_ = this->create_subscription<Twist>(
             "cmd_vel",
             10,
@@ -41,13 +49,14 @@ public:
             }
         );
 
+        // 配合下面的 tf_broadcaster 发布 TF : 
         odom_publisher_ = this->create_publisher<Odometry>(
             "odom",
             10
         );
-
         tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 
+        // 定时任务
         timer_ = this->create_wall_timer(
             timer_run_period_,
             [this]()
@@ -174,16 +183,21 @@ private:
 
     void timer_callback()
     {
-        // The timer callback period reads and uses the stored velocity.
+        // timer_callback 函数使用 cmd_vel_callback 已存储的速度信息
 
         // calculate dt  (real dt)
         const rclcpp::Time current_time = this->now();
         const double dt = (current_time - last_update_time_).seconds();
         last_update_time_ = current_time;
 
+        // 检查上一次 cmd_vel 是否执行超过规定时间, 若超过, 则设置速度为0
+        // 否则小车会一直使用过时的 cmd_vel 一直跑
         check_cmd_vel_timeout(current_time);
+        // 更新小车的位置, 通过速度对时间的积分计算路程
         update_pose(dt);
+        // 发布 /odom 消息
         publish_odom(current_time);
+        // 发布 TF: odom->base_link
         broadcast_odom_tf(current_time);
     }
 

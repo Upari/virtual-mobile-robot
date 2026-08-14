@@ -1,3 +1,4 @@
+
 import os
 
 from launch import LaunchDescription
@@ -65,10 +66,10 @@ def generate_launch_description():
         executable="rviz2",
         name="rviz2",
         output="screen",
-        argument=[
-            "-d",
-            rviz_config_file
-        ]
+        # argument=[
+        #     "-d",
+        #     rviz_config_file
+        # ]
     )
     
     return LaunchDescription([

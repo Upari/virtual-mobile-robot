@@ -1,3 +1,8 @@
+# bridge.yaml
+# 用于 Gazebo 和 ROS2 之间的 Topic 转换
+
+
+# 已弃用, 转发 ROS2 cmd_vel 到 Gazebo, 让 Gazebo 控制小车
 # # ROS 2 /cmd_vel -> Gazebo /cmd_vel
 # - ros_topic_name: "/cmd_vel"
 #   gz_topic_name: "/cmd_vel"
@@ -5,6 +10,7 @@
 #   gz_type_name: "gz.msgs.Twist"
 #   direction: ROS_TO_GZ
 
+# 已弃用, 转发 Gazebo /odom 到 ROS2
 # # Gazebo /odom -> ROS 2 /odom
 # - ros_topic_name: "/odom"
 #   gz_topic_name: "/odom"
@@ -12,6 +18,7 @@
 #   gz_type_name: "gz.msgs.Odometry"
 #   direction: GZ_TO_ROS
 
+# 仿真时间 很重要必须启用
 # Gazebo /clock -> ROS 2 /clock
 - ros_topic_name: "/clock"
   gz_topic_name: "/clock"
@@ -20,6 +27,7 @@
   direction: GZ_TO_ROS
   qos_profile: CLOCK
 
+# Gazebo 虚拟雷达, 发布消息到 /scan 
 # Gazebo /scan -> ROS 2 /scan
 - ros_topic_name: "/scan"
   gz_topic_name: "/scan"

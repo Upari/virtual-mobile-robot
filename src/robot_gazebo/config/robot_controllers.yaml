@@ -1,3 +1,5 @@
+# 控制小车的ROS2_controller的配置文件
+
 controller_manager:
   ros__parameters:
     update_rate: 50
@@ -12,15 +14,15 @@ controller_manager:
 diff_drive_controller:
   ros__parameters:
 
-    # basic setting 
+    # basic setting , 与 robot.urdf.xacro里面的ros_control 声明相匹配
     left_wheel_names: ["left_wheel_joint"]
     right_wheel_names: ["right_wheel_joint"]
     wheel_separation: 0.34
     wheel_radius: 0.08
 
-    # pub odom and tf
+    # 发布 /odom 和 TF: odom->base_link
     position_feedback: true
-    open_loop: false    # true feedback from gazebo or engine
+    open_loop: false    # 用轮子反馈计算odom, true则直接用cmd_vel积分计算odom
     
     odom_frame_id: odom
     base_frame_id: base_link
@@ -29,7 +31,7 @@ diff_drive_controller:
     publish_rate: 50.0
     cmd_vel_timeout: 0.5
 
-    # Speed limit
+    # 速度限制, 注意最小速度不能>=最大速度(可以为负数)
     linear:
       x:
         max_velocity: 0.5

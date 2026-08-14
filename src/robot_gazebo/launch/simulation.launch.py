@@ -1,4 +1,16 @@
-import os       # 拼接文件地址
+"""
+simulation.launch.py
+仿真启动文件
+启动:
+    gazebo,                         仿真
+    robot_state_publisher,          小车形状发布
+    bridge,                         Gazebo ROS2 桥
+    delayed_spawn_robot,            延迟生成小车在Gazebo里面
+    rviz_node,                      启动Rviz
+    delayed_spawn_ros_controllers,  延迟生成Ros Controller
+"""
+
+import os
 
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription, TimerAction
@@ -53,6 +65,7 @@ def generate_launch_description():
         value_type=str,
     )
 
+    # 仿真程序
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(
@@ -66,6 +79,7 @@ def generate_launch_description():
         }.items(),
     )
 
+    # 发布小车的形状
     robot_state_publisher = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
@@ -79,6 +93,7 @@ def generate_launch_description():
         ],
     )
 
+    # Gazebo ROS2 桥, 从 Gazebo 发送 /scan /clock 到 ROS2 
     bridge = Node(
         package="ros_gz_bridge",
         executable="parameter_bridge",
@@ -92,7 +107,7 @@ def generate_launch_description():
         ],
     )
 
-    # Spawn Robot
+    # 生成小车, 后面可以把这个参数也写进yaml文件
     spawn_robot = Node(
         package="ros_gz_sim",
         executable="create",
@@ -113,7 +128,6 @@ def generate_launch_description():
             "0.01",
         ],
     )
-
     delayed_spawn_robot = TimerAction(
         period=3.0,
         actions=[spawn_robot],
@@ -145,7 +159,6 @@ def generate_launch_description():
             "/controller_manager"
         ]
     )
-
     spawn_diff_drive_controller = Node(
         package="controller_manager",
         executable="spawner",
@@ -159,7 +172,6 @@ def generate_launch_description():
             "--ros-args --remap /diff_drive_controller/cmd_vel:=/cmd_vel"
         ]
     )
-
     delayed_spawn_ros_controllers = TimerAction(
         period=3.0,
         actions=[

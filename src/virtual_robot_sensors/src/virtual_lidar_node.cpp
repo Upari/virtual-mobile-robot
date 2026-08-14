@@ -1,3 +1,9 @@
+/*
+已弃用, 
+虚假的 /scan 发布节点, 仅仅发布设置好的距离, 用来测试使用
+真正的 /scan 由gazebo发布
+*/
+
 #include <memory>
 #include <chrono>
 #include <cmath>

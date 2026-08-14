@@ -1,4 +1,16 @@
-import os
+"""
+navigation.launch.py
+导航启动文件
+启动: 
+    map_server,             加载地图
+    bt_navigator,           
+    planner_server,
+    controller_server,
+    behavior_server,
+    lifecycle_manager,      管理生命周期
+    amcl,                   AMCL
+"""
+
 from launch import LaunchDescription
 from launch_ros.actions import Node
 

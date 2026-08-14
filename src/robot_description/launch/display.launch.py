@@ -1,3 +1,8 @@
+"""
+已弃用 
+display.launch.py 
+用来发布小车的形态, 并且启动rviz
+"""
 from launch import LaunchDescription
 from launch.substitutions import Command
 from launch_ros.actions import Node
