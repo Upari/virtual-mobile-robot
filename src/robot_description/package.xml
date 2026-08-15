@@ -3,8 +3,8 @@
 <package format="3">
   <name>robot_description</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="panqiyu521@gmail.com">user</maintainer>
+  <description>A Gazebo Nav car base on ROS2.</description>
+  <maintainer email="panqiyu521@gmail.com">Kirin Pan</maintainer>
   <license>Apache-2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>

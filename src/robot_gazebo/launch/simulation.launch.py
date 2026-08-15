@@ -51,6 +51,7 @@ def generate_launch_description():
         "bridge.yaml",
     )
 
+    # 更改 Gazebo 地图的位置
     world_file = os.path.join(
         robot_gazebo_share,
         "worlds",
@@ -63,6 +64,12 @@ def generate_launch_description():
                 controller_file
         ]),
         value_type=str,
+    )
+
+    rviz_config_file = os.path.join(
+        robot_gazebo_share, 
+        'config',
+        'rviz_config.rviz'
     )
 
     # 仿真程序
@@ -139,6 +146,7 @@ def generate_launch_description():
         executable="rviz2",
         name="rviz2",
         output="screen",
+        arguments=['-d', rviz_config_file],
         parameters=[
             {
                 "use_sim_time": True,

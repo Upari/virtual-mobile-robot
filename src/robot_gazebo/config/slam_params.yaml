@@ -1,0 +1,38 @@
+# SLAM 建图参数
+slam_toolbox:
+  ros__parameters:
+    mode: mapping                # 建图模式
+    scan_topic: /scan
+    map_frame: map
+    odom_frame: odom
+    base_frame: base_footprint   
+    resolution: 0.05
+    max_laser_range: 12.0        # 雷达实际量程
+    map_update_interval: 1.0     # 1 秒一帧地图
+    minimum_time_interval: 0.5
+    minimum_travel_distance: 0.5
+    minimum_travel_heading: 0.5
+
+# ---------------- AMCL ----------------
+amcl:
+  ros__parameters:
+    use_sim_time: true
+    alpha1: 0.2
+    alpha2: 0.2
+    alpha3: 0.2
+    alpha4: 0.2
+    alpha5: 0.2
+    base_frame_id: "base_footprint"
+    global_frame_id: "map"
+    odom_frame_id: "odom"
+    robot_model_type: "nav2_amcl::DifferentialMotionModel"
+    scan_topic: /scan
+    max_beams: 60
+    min_particles: 500
+    max_particles: 2000
+    transform_tolerance: 1.0
+    set_initial_pose: true
+    initial_pose_x: 0.0
+    initial_pose_y: 0.0
+    initial_pose_z: 0.0
+    initial_pose_yaw: 0.0
