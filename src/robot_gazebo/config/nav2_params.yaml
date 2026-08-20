@@ -13,7 +13,6 @@
 map_server:
   ros__parameters:
     use_sim_time: true
-    yaml_filename: "/home/user/virtual-mobile-robot/maps/room_map.yaml"
 
 # ---------------- Global Costmap ----------------
 global_costmap:

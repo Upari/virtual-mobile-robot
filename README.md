@@ -1,21 +1,21 @@
-# 概述
+# 1. 概述
 
 本项目是基于 ROS2-Jazzy 和 Gazebo-Sim 实现的 2D 导航小车.
 
-# 功能与特性
+# 2. 功能与特性
 
 - 纯 Gazebo 仿真, 无硬件参与, 后期亦可转移到真实小车上.
 - Rviz2 可视化建图, 定位, 导航.
 - SLAM 建图, AMCL 定位, Nav2 仿真.
 - launch 文件一键启动.
 
-# 环境
+# 3. 环境
 
-- Ubuntu 24.02
+- Ubuntu 24.04
 - ROS2 Jazzy
 - Gazebo Humble
 
-# 项目构成
+# 4. 项目构成
 
 ```
 virtual-mobile-robot
@@ -23,10 +23,10 @@ virtual-mobile-robot
 │   └─ virtual_robot_base
 │   │   └─ src
 │   │       └─virtual_diff_drive_node(已弃用)   读取cmd_vel控制小车, 并且发布odom和tf变换
-│   ├─ robot_description         
+│   ├─ robot_description   
 │   │   ├─ launch
 │   │   │   └─ display.launch.py(已弃用)        发布小车的形态, 并且启动rviz展示小车
-│   │   └─ urdf                               
+│   │   └─ urdf                     
 │   │       └─ robot.urdf.xacro                 * 小车的形态, gazebo 插件, 
 │   ├─ robot_bringup
 │   │   └─ launch
@@ -86,7 +86,7 @@ flowchart TB
     BT --> CTRL
 ```
 
-# 依赖安装
+# 5. 依赖安装
 
 ### （Ubuntu 24.04 / ROS 2 Jazzy）
 
@@ -97,7 +97,7 @@ flowchart TB
 - SLAM：`sudo apt install ros-jazzy-slam-toolbox`.
 - 遥控：`sudo apt install ros-jazzy-teleop-twist-keyboard`.
 
-# 如何运行
+# 6. 如何运行
 
 ## Nav2 导航
 
@@ -116,14 +116,13 @@ flowchart TB
 - 启动 Gazebo 仿真: `ros2 launch robot_gazebo simulation.launch.py`.
 - 确保 `navigation.launch.py` 不在运行, 运行SLAM Launch文件: `ros2 launch robot_gazebo slam.launch.py`.
 - 新开一个终端运行键盘操控小车程序.
-- 保存地图: `ros2 run nav2_map_server map_saver_cli -f ~/virtual-mobile-robot/maps/map_name -t /map`.  -t 表示
-- *注: 新建地图后需要修改`nav2_params.yaml`文件中`map_server`的地图地址.*
-- 完善 `nav2_params.xmal` 配置文件.
+- 保存地图: `ros2 run nav2_map_server map_saver_cli -f ~/virtual-mobile-robot/robot_gazebo/maps/map_name -t /map`.  -t 表示
+- *注: 新建地图后需要修改 `navigation.launch.py`文件中 `map_filename`的地图名称变量.*
 
-# Todo
+# 7. Todo
 
 - 继续优化Nav2导航, 解决路径震荡问题.
 
-# 许可证
+# 8. 许可证
 
 本项目基于 [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0) 发布.

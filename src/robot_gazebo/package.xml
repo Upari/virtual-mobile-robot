@@ -23,8 +23,25 @@
   <exec_depend>diff_drive_controller</exec_depend>
   <exec_depend>joint_state_broadcaster</exec_depend>
 
+
   <depend>geometry_msgs</depend>
-  
+
+  <depend>ros-jazzy-ros-gz-sim</depend>
+  <depend>ros-jazzy-ros-gz-bridge</depend>
+
+  <depend>ros-jazzy-ros2-control</depend>
+  <depend>ros-jazzy-ros2-controller-manager</depend>
+  <depend>ros-jazzy-diff-drive-controller</depend>
+  <depend>ros-jazzy-joint-state-broadcaster</depend>
+  <depend>ros-jazzy-gz-ros-control</depend>
+
+  <depend>ros-jazzy-navigation2</depend>
+  <depend>ros-jazzy-nav2-bringup</depend>
+
+  <depend>ros-jazzy-slam-toolbox</depend>
+  <depend>ros-jazzy-slam-toolbox</depend>
+  <depend>ros-jazzy-teleop-twist-keyboard</depend>
+
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

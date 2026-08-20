@@ -13,7 +13,8 @@ simulation.launch.py
 import os
 
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, TimerAction
+from launch.actions import IncludeLaunchDescription, RegisterEventHandler
+from launch.event_handlers import OnProcessStart, OnProcessExit
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import Command
 
@@ -114,10 +115,24 @@ def generate_launch_description():
         ],
     )
 
+    # Rviz
+    rviz_node = Node(
+        package="rviz2",
+        executable="rviz2",
+        name="rviz2",
+        output="screen",
+        arguments=['-d', rviz_config_file],
+        parameters=[
+            {
+                "use_sim_time": True,
+            }
+        ],
+    )
+
     # 生成小车, 后面可以把这个参数也写进yaml文件
     spawn_robot = Node(
         package="ros_gz_sim",
-        executable="create",
+        executable="spawn_entity",
         name="spawn_virtual_mobile_robot",
         output="screen",
         arguments=[
@@ -135,26 +150,6 @@ def generate_launch_description():
             "0.01",
         ],
     )
-    delayed_spawn_robot = TimerAction(
-        period=3.0,
-        actions=[spawn_robot],
-    )
-
-    # Rviz
-    rviz_node = Node(
-        package="rviz2",
-        executable="rviz2",
-        name="rviz2",
-        output="screen",
-        arguments=['-d', rviz_config_file],
-        parameters=[
-            {
-                "use_sim_time": True,
-            }
-        ],
-    )
-
-
     # ros2 controllers
     spawn_joint_state_broadcaster = Node(
         package="controller_manager",
@@ -180,12 +175,22 @@ def generate_launch_description():
             "--ros-args --remap /diff_drive_controller/cmd_vel:=/cmd_vel"
         ]
     )
-    delayed_spawn_ros_controllers = TimerAction(
-        period=3.0,
-        actions=[
-            spawn_joint_state_broadcaster,
-            spawn_diff_drive_controller
-            ]
+
+    spawn_joint_state_broadcaster_after_robot = RegisterEventHandler(
+        OnProcessExit(
+            target_action="spawn_robot",
+            on_exit=[
+                spawn_joint_state_broadcaster,
+            ],
+        )
+    )
+    spawn_diff_drive_controller_after_joint_state = RegisterEventHandler(
+        OnProcessExit(
+            target_action="spawn_joint_state_broadcaster",
+            on_exit=[
+                spawn_diff_drive_controller,
+            ],
+        )
     )
 
 
@@ -193,7 +198,8 @@ def generate_launch_description():
         gazebo,
         robot_state_publisher,
         bridge,
-        delayed_spawn_robot,
         rviz_node,
-        delayed_spawn_ros_controllers,
+        spawn_robot,
+        spawn_joint_state_broadcaster_after_robot,
+        spawn_diff_drive_controller_after_joint_state
     ])

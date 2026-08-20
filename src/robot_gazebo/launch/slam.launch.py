@@ -29,15 +29,6 @@ def generate_launch_description():
         }.items(),
     )
 
-    amcl = Node(
-        package="nav2_amcl",
-        executable="amcl",
-        name="amcl",
-        output="screen",
-        parameters=[slam_params_file],
-    )
-
     return LaunchDescription([
         slam, 
-        amcl,
     ])
