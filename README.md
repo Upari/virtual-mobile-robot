@@ -2,6 +2,8 @@
 
 本项目是基于 ROS2-Jazzy 和 Gazebo-Sim 实现的 2D 导航小车.
 
+**本分支删除了主分支中适合学习的部分, 仅保留虚拟小车运行的核心文件**
+
 # 2. 功能与特性
 
 - 纯 Gazebo 仿真, 无硬件参与, 后期亦可转移到真实小车上.
@@ -20,21 +22,9 @@
 ```
 virtual-mobile-robot
 ├─ src
-│   └─ virtual_robot_base
-│   │   └─ src
-│   │       └─virtual_diff_drive_node(已弃用)   读取cmd_vel控制小车, 并且发布odom和tf变换
 │   ├─ robot_description   
-│   │   ├─ launch
-│   │   │   └─ display.launch.py(已弃用)        发布小车的形态, 并且启动rviz展示小车
-│   │   └─ urdf                     
+│   │   └─ urdf   
 │   │       └─ robot.urdf.xacro                 * 小车的形态, gazebo 插件, 
-│   ├─ robot_bringup
-│   │   └─ launch
-│   │       └─virtual_robot_launch(已弃用)      发布小车的形态, 启动驾驶节点(virtual_robot_base包),
-│   │                                           启动虚拟雷达, 启动rviz
-│   ├─ virtual_robot_sensors
-│   │   └─ src
-│   │       └─virtual_lidar_node.cpp(已弃用)    虚假的 /scan 发布节点, 用来测试使用
 │   └─ robot_gazebo                             主仿真包, 内含多个启动launch
 │       ├─ config
 │       │   ├─ bridge.yaml                      ROS2 - Gazebo Bridge, Gazebo发布/clock /scan
@@ -45,9 +35,6 @@ virtual-mobile-robot
 │       │   └─ simulation.launch.py             启动 Nav2
 │       └─ worlds
 │           └─ lidar_world.sdf                  Gazebo 世界文件
-│
-│
-│
 └─ maps                                         Slam 建图保存的地图
 ```
 
@@ -99,10 +86,11 @@ flowchart TB
 
 # 6. 如何运行
 
+**安装上述依赖** 
+
 ## Nav2 导航
 
-1. 安装所需的依赖
-2. 在终端中加载环境 `souce /opt/ros/jazzy/setup.bash`, `souce install/setup.bash`.
+1. 在终端中加载环境 `souce /opt/ros/jazzy/setup.bash`, `souce install/setup.bash`.
 3. 运行命令①: `ros2 launch robot_gazebo simulation.launch.py`.
 4. 确保命令①启动完全后, 运行命令②: `ros2 launch robot_gazebo navigation.launch.py`.
 
@@ -112,11 +100,16 @@ flowchart TB
 
 ## SLAM 建图
 
-- 将新的地图导入 `/robot_gazebo/worlds`, 并且同步修改 `simulation.launch.py` 文件中的 `world_file` 参数.
-- 启动 Gazebo 仿真: `ros2 launch robot_gazebo simulation.launch.py`.
-- 确保 `navigation.launch.py` 不在运行, 运行SLAM Launch文件: `ros2 launch robot_gazebo slam.launch.py`.
-- 新开一个终端运行键盘操控小车程序.
-- 保存地图: `ros2 run nav2_map_server map_saver_cli -f ~/virtual-mobile-robot/robot_gazebo/maps/map_name -t /map`.  -t 表示
+1. 将新的地图导入 `/robot_gazebo/worlds`, 并且同步修改 `simulation.launch.py` 文件中的 `world_file` 参数.
+
+2. 启动 Gazebo 仿真: `ros2 launch robot_gazebo simulation.launch.py`.
+
+3. 确保 `navigation.launch.py` 不在运行, 运行SLAM Launch文件: `ros2 launch robot_gazebo slam.launch.py`.
+
+4. 新开一个终端运行键盘操控小车程序.
+
+5. 保存地图: `ros2 run nav2_map_server map_saver_cli -f ~/virtual-mobile-robot/robot_gazebo/maps/map_name -t /map`.  -t 表示
+
 - *注: 新建地图后需要修改 `navigation.launch.py`文件中 `map_filename`的地图名称变量.*
 
 # 7. Todo
