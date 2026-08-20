@@ -21,21 +21,33 @@
 
 ```
 virtual-mobile-robot
-├─ src
-│   ├─ robot_description   
-│   │   └─ urdf   
-│   │       └─ robot.urdf.xacro                 * 小车的形态, gazebo 插件, 
-│   └─ robot_gazebo                             主仿真包, 内含多个启动launch
-│       ├─ config
-│       │   ├─ bridge.yaml                      ROS2 - Gazebo Bridge, Gazebo发布/clock /scan
-│       │   ├─ robot_controller.yaml            控制小车的 ROS2 Controller 的配置文件
-│       │   └─ nav2_params.yaml                 Nav2 的配置文件
-│       ├─ launch
-│       │   ├─ navigation.launch.py             启动仿真
-│       │   └─ simulation.launch.py             启动 Nav2
-│       └─ worlds
-│           └─ lidar_world.sdf                  Gazebo 世界文件
-└─ maps                                         Slam 建图保存的地图
+└─ src
+    └─ virtual_robot_base
+    │   └─ src
+    │       └─virtual_diff_drive_node(已弃用)   读取cmd_vel控制小车, 并且发布odom和tf变换
+    ├─ robot_description   
+    │   ├─ launch
+    │   │   └─ display.launch.py(已弃用)        发布小车的形态, 并且启动rviz展示小车
+    │   └─ urdf   
+    │       └─ robot.urdf.xacro                 * 小车的形态, gazebo 插件, 
+    ├─ robot_bringup
+    │   └─ launch
+    │       └─virtual_robot_launch(已弃用)      发布小车的形态, 启动驾驶节点(virtual_robot_base包),
+    │                                           启动虚拟雷达, 启动rviz
+    ├─ virtual_robot_sensors
+    │   └─ src
+    │       └─virtual_lidar_node.cpp(已弃用)    虚假的 /scan 发布节点, 用来测试使用
+    └─ robot_gazebo                             主仿真包, 内含多个启动launch
+        ├─ config
+        │   ├─ bridge.yaml                      ROS2 - Gazebo Bridge, Gazebo发布/clock /scan
+        │   ├─ robot_controller.yaml            控制小车的 ROS2 Controller 的配置文件
+        │   └─ nav2_params.yaml                 Nav2 的配置文件
+        ├─ launch
+        │   ├─ navigation.launch.py             启动仿真
+        │   └─ simulation.launch.py             启动 Nav2
+        └─ worlds
+        │   └─ lidar_world.sdf                  Gazebo 世界文件
+        └─ maps                                 Slam 建图保存的地图
 ```
 
 当前项目链路
